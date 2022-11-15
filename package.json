@@ -2,25 +2,48 @@
   "name": "matcha",
   "displayName": "matcha",
   "description": "Read and track manga from VS Code",
-  "type": "module",
   "version": "0.0.1",
+  "type": "module",
   "engines": {
     "vscode": "^1.73.0"
   },
+  "publisher": "Tyo Nirwansyah",
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:matcha.helloWorld"
+    "onCommand:ping",
+    "onView:sidebar"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "matcha.helloWorld",
-        "title": "Hello World"
+        "command": "ping",
+        "title": "Ping Matcha",
+        "category": "Matcha"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "view-sidebar",
+          "title": "Matcha",
+          "icon": "media/logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "view-sidebar": [
+        {
+          "type": "webview",
+          "id": "sidebar",
+          "name": "Matcha",
+          "icon": "media/logo.svg",
+          "contextualTitle": "Matcha"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "rollup -c && webpack --mode production",
