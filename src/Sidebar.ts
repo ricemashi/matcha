@@ -18,6 +18,13 @@ export class Sidebar implements vscode.WebviewViewProvider {
     };
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+
+    webviewView.webview.onDidReceiveMessage(async (data) => {
+      switch (data.type) {
+        case "test":
+          vscode.commands.executeCommand("ping");
+      }
+    });
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
