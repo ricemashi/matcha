@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import svelte from "rollup-plugin-svelte";
-import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import { terser } from "rollup-plugin-terser";
-import { fileURLToPath } from "url";
-import sveltePreprocess from "svelte-preprocess";
-import typescript from "@rollup/plugin-typescript";
-import postcss from "rollup-plugin-postcss";
-import path from "path";
-import fs from "fs";
+const svelte = require("rollup-plugin-svelte");
+const resolve = require("@rollup/plugin-node-resolve");
+const commonjs = require("@rollup/plugin-commonjs");
+const { terser } = require("rollup-plugin-terser");
+const { fileURLToPath } = require("url");
+const sveltePreprocess = require("svelte-preprocess");
+const typescript = require("@rollup/plugin-typescript");
+const postcss = require("rollup-plugin-postcss");
+const path = require("path");
+const fs = require("fs");
 
 const production = !process.env.ROLLUP_WATCH;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
-export default fs
+module.exports = fs
   .readdirSync(path.join(__dirname, "web", "pages"))
   .map((input) => {
     const name = input.split(".")[0];
@@ -29,7 +29,12 @@ export default fs
       },
       plugins: [
         svelte({
-          preprocess: sveltePreprocess(),
+          preprocess: sveltePreprocess({
+            sourceMap: !production,
+            postcss: {
+              plugins: [require("tailwindcss"), require("autoprefixer")],
+            },
+          }),
         }),
 
         postcss({
