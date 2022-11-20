@@ -3,12 +3,12 @@ const svelte = require("rollup-plugin-svelte");
 const resolve = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
 const { terser } = require("rollup-plugin-terser");
-const { fileURLToPath } = require("url");
 const sveltePreprocess = require("svelte-preprocess");
 const typescript = require("@rollup/plugin-typescript");
 const postcss = require("rollup-plugin-postcss");
 const path = require("path");
 const fs = require("fs");
+const builtins = require("rollup-plugin-node-builtins");
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -26,6 +26,7 @@ module.exports = fs
         format: "iife",
         name: "app",
         file: "out/" + name + ".js",
+        intro: "const global = window;",
       },
       plugins: [
         svelte({
@@ -41,6 +42,9 @@ module.exports = fs
           extract: true,
         }),
 
+        commonjs(),
+        builtins(),
+
         // If you have external dependencies installed from
         // npm, you'll most likely need these plugins. In
         // some cases you'll need additional configuration -
@@ -51,7 +55,6 @@ module.exports = fs
           dedupe: ["svelte"],
           moduleDirectory: ["node_modules"],
         }),
-        commonjs(),
         typescript({
           tsconfig: "web/tsconfig.json",
           sourceMap: !production,
