@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { Panel } from "./Panel";
 import { getNonce } from "./Util";
 
 export class Sidebar implements vscode.WebviewViewProvider {
@@ -22,6 +23,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (data) => {
       switch (data.type) {
         case "test":
+          Panel.createOrShow(this._extensionUri);
           vscode.commands.executeCommand("ping");
       }
     });
@@ -40,29 +42,31 @@ export class Sidebar implements vscode.WebviewViewProvider {
     const styleMainUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "sidebar.css")
     );
+    const styleSidebarUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "media", "sidebar.css")
+    );
 
     const nonce = getNonce();
 
-    return `<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<!--
-					Use a content security policy to only allow loading images from https or from our extension directory,
-					and only allow scripts that have a specific nonce.
-        -->
-        <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource}; script-src 'nonce-${nonce}';">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${styleResetUri}" rel="stylesheet">
-				<link href="${styleVSCodeUri}" rel="stylesheet">
+    return `
+        <!DOCTYPE html>
+		<html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="Content-Security-Policy" content="default-src; img-src https: data:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="${styleResetUri}" rel="stylesheet">
+                <link href="${styleVSCodeUri}" rel="stylesheet">
                 <link href="${styleMainUri}" rel="stylesheet">
+                <link href="${styleSidebarUri}" rel="stylesheet">
                 <script nonce="${nonce}">
                     const tsvscode = acquireVsCodeApi();
                 </script>
-			</head>
+            </head>
             <body>
-				<script nonce="${nonce}" src="${scriptUri}"></script>
-			</body>
-			</html>`;
+
+            </body>
+            <script nonce="${nonce}" src="${scriptUri}"></script>
+        </html>`;
   }
 }
