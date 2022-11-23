@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { baseUrl } from "./Constants";
+import { apiBaseUrl, baseUrl } from "./Constants";
 import { getNonce } from "./Util";
 export class Panel {
   public static currentPanel: Panel | undefined;
@@ -75,7 +75,7 @@ export class Panel {
 		<html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src; connect-src ${baseUrl}; img-src https: data:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src; connect-src ${baseUrl} ${apiBaseUrl}; img-src https: data:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="${styleResetUri}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
