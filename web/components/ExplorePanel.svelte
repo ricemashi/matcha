@@ -81,13 +81,9 @@
   >
     {#each mangas as manga, i}
       <div class="flex flex-col gap-1 my-2">
-        <a
-          href="/"
-          class="bg-green-400 inline-block relative"
-          on:click={dispatchMangaInfo}
-        >
+        <a href="/" class="bg-green-400" on:click={dispatchMangaInfo}>
           <img
-            class="hover:translate-x-1 hover:-translate-y-1 delay-50 duration-100 h-96 w-64 bg-no-repeat object-fill"
+            class="hover:translate-x-1 hover:-translate-y-1 delay-50 duration-100 h-96 w-screen bg-fullPercent object-fill"
             src={`https://api.consumet.org/utils/image-proxy?url=${manga.image}&referer=${manga.headerForImage.Referer}`}
             alt={`${manga.id}-image`}
             loading="lazy"
