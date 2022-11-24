@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { apiBaseUrl, baseUrl } from "./Constants";
+import EventEmitterHandler from "./Emitter";
 import { getNonce } from "./Util";
 export class Panel {
   public static currentPanel: Panel | undefined;
@@ -8,7 +9,7 @@ export class Panel {
 
   private _disposables: vscode.Disposable[] = [];
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     this._panel = panel;
     this._extensionUri = extensionUri;
 
@@ -49,6 +50,13 @@ export class Panel {
     const webview = this._panel.webview;
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
+
+    webview.onDidReceiveMessage(async (data) => {
+      switch (data.type) {
+        case "manga_info":
+          EventEmitterHandler.getInstance().emit("manga_info");
+      }
+    });
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {

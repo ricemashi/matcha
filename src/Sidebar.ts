@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import EventEmitterHandler from "./Emitter";
+
 import { Panel } from "./Panel";
 import { getNonce } from "./Util";
 
@@ -26,6 +28,14 @@ export class Sidebar implements vscode.WebviewViewProvider {
           Panel.createOrShow(this._extensionUri);
           vscode.commands.executeCommand("ping");
       }
+    });
+
+    EventEmitterHandler.getInstance().on("manga_info", () => {
+      vscode.commands.executeCommand("ping");
+      webviewView.webview.postMessage({
+        type: "manga_info",
+        data: "hello",
+      });
     });
   }
 
