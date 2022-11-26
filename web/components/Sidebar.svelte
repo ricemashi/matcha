@@ -2,31 +2,29 @@
   import { onMount } from "svelte";
   import Button from "./Button.svelte";
 
-  let text: string = "No emit";
+  let newsFeeds: Record<string, any>[];
 
-  onMount(() => {
+  onMount(async () => {
     window.addEventListener("message", (event) => {
       const message = event.data;
-      console.log("take 1");
       switch (message.type) {
-        case "manga_info": {
-          text = "emmited";
+        case "manga_news":
+          newsFeeds = message.data;
           break;
-        }
       }
     });
   });
 
-  const dispatchInfo = () => {
-    tsvscode.postMessage({ type: "test", value: "test" });
+  const openExplorer = () => {
+    tsvscode.postMessage({ type: "open_explorer", data: "open_explorer" });
   };
 </script>
 
 <main>
   <div class="flex flex-col gap-4 my-3">
     <h1 class="text-xl font-bold mb-2">Quick Actions</h1>
-    <Button on:click={dispatchInfo} variant="primary">Start Reading</Button>
-    <Button on:click={dispatchInfo} variant="secondary">Explore Library</Button>
+    <Button on:click={openExplorer} variant="primary">Start Reading</Button>
+    <Button on:click={openExplorer} variant="secondary">Explore Library</Button>
   </div>
 
   <div class="flex flex-col gap-4 my-10">
@@ -68,13 +66,11 @@
   </div>
 
   <div class="my-10">
-    <a href="/">
-      <h5
-        class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white"
-      >
-        Want a quote from your favorite manga/anime characters?
-      </h5>
-    </a>
+    <h5
+      class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white"
+    >
+      Want a quote from your favorite manga/anime characters?
+    </h5>
     <p class="mb-4 text-base text-gray-700 dark:text-gray-400">
       This button below will toast out some facts and quotes.
     </p>

@@ -1,2 +1,5 @@
-export const baseUrl: string = "http://www.mangahere.cc/";
-export const apiBaseUrl: string = "https://api.consumet.org";
+export const apiBaseUrl = {
+  service: "https://api.consumet.org",
+  manga: "http://www.mangahere.cc/",
+  news: "https://www.animenewsnetwork.com/",
+};

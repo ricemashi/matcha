@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
-import { apiBaseUrl, baseUrl } from "./Constants";
+import { apiBaseUrl } from "./Constants";
 import EventEmitterHandler from "./Emitter";
+import { Fetcher } from "./Fetcher";
 import { getNonce } from "./Util";
+
 export class Panel {
   public static currentPanel: Panel | undefined;
   private readonly _panel: vscode.WebviewPanel;
@@ -51,11 +53,40 @@ export class Panel {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
 
-    webview.onDidReceiveMessage(async (data) => {
-      switch (data.type) {
+    this.onWebviewLoaded();
+
+    webview.onDidReceiveMessage(async (msg) => {
+      switch (msg.type) {
         case "manga_info":
           EventEmitterHandler.getInstance().emit("manga_info");
+          break;
+        case "change_manga_directory":
+          const mangaSearchedDirectory = await Fetcher.getMangaSearch(
+            msg.data.query
+          );
+          webview.postMessage({
+            type: "change_manga_directory",
+            data: mangaSearchedDirectory,
+          });
+          break;
+        case "manga_directory":
+          const mangaDirectory = await Fetcher.getMangaDirectory(1);
+
+          this._panel.webview.postMessage({
+            type: "manga_directory",
+            data: mangaDirectory,
+          });
+          break;
       }
+    });
+  }
+
+  private async onWebviewLoaded() {
+    const mangaDirectory = await Fetcher.getMangaDirectory(1);
+
+    this._panel.webview.postMessage({
+      type: "manga_directory",
+      data: mangaDirectory,
     });
   }
 
@@ -72,9 +103,6 @@ export class Panel {
     const styleMainUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "explore-panel.css")
     );
-    const stylePanelUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "panel.css")
-    );
 
     const nonce = getNonce();
 
@@ -83,12 +111,11 @@ export class Panel {
 		<html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src; connect-src ${baseUrl} ${apiBaseUrl}; img-src https: data:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src; connect-src ${apiBaseUrl.manga} ${apiBaseUrl.service}; img-src https: data:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="${styleResetUri}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
                 <link href="${styleMainUri}" rel="stylesheet">
-                <link href="${stylePanelUri}" rel="stylesheet">
 
                 <script nonce="${nonce}">
                     const tsvscode = acquireVsCodeApi();

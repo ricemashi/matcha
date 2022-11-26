@@ -1,28 +1,38 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { useLazyImage as lazyImage } from "svelte-lazy-image";
-  import Fetcher from "../shared/fetcher";
 
   let mangas: any[] = [];
   let query = "";
 
-  onMount(() => {
-    mangaDirectory();
+  onMount(async () => {
+    window.addEventListener("message", (event) => {
+      const msg = event.data;
+      switch (msg.type) {
+        case "manga_directory":
+        case "change_manga_directory":
+          mangas = msg.data.results;
+          console.log(mangas);
+          break;
+      }
+    });
   });
-
-  const mangaDirectory = async () => {
-    const data = await Fetcher.getMangaDirectory(1);
-    mangas = data.results;
-  };
 
   const searchResults = async () => {
     if (query === "") {
-      mangaDirectory();
+      tsvscode.postMessage({
+        type: "manga_directory",
+        data: "",
+      });
       return;
     }
 
-    const data = await Fetcher.getMangaSearch(query);
-    mangas = data.results;
+    tsvscode.postMessage({
+      type: "change_manga_directory",
+      data: {
+        query,
+      },
+    });
   };
 
   const handleImgError = (i: number) => {
@@ -33,7 +43,7 @@
   const dispatchMangaInfo = (manga: any) => {
     tsvscode.postMessage({
       type: "manga_info",
-      value: {
+      data: {
         manga_id: manga.id,
       },
     });
@@ -71,7 +81,7 @@
       <button
         type="submit"
         class="absolute right-2.5 bottom-2.5 rounded-lg bg-green-500 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
-        on:click={searchResults}>Search</button
+        >Search</button
       >
     </form>
   </div>

@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
+import { apiBaseUrl } from "./Constants";
 import EventEmitterHandler from "./Emitter";
+import { Fetcher } from "./Fetcher";
 
-import { Panel } from "./Panel";
+import { Panel } from "./ExplorePanel";
 import { getNonce } from "./Util";
 
 export class Sidebar implements vscode.WebviewViewProvider {
@@ -22,11 +24,12 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    webviewView.webview.onDidReceiveMessage(async (data) => {
-      switch (data.type) {
-        case "test":
+    this.onWebviewLoaded();
+
+    webviewView.webview.onDidReceiveMessage(async (msg) => {
+      switch (msg.type) {
+        case "open_explorer":
           Panel.createOrShow(this._extensionUri);
-          vscode.commands.executeCommand("ping");
       }
     });
 
@@ -36,6 +39,15 @@ export class Sidebar implements vscode.WebviewViewProvider {
         type: "manga_info",
         data: "hello",
       });
+    });
+  }
+
+  private async onWebviewLoaded() {
+    const mangaNewsFeed = await Fetcher.getMangaFeed();
+
+    this._view?.webview.postMessage({
+      type: "manga_news",
+      data: mangaNewsFeed,
     });
   }
 
@@ -52,9 +64,9 @@ export class Sidebar implements vscode.WebviewViewProvider {
     const styleMainUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "sidebar.css")
     );
-    const styleSidebarUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "media", "sidebar.css")
-    );
+    // const styleSidebarUri = webview.asWebviewUri(
+    //   vscode.Uri.joinPath(this._extensionUri, "media", "sidebar.css")
+    // );
 
     const nonce = getNonce();
 
@@ -63,12 +75,11 @@ export class Sidebar implements vscode.WebviewViewProvider {
 		<html lang="en">
             <head>
                 <meta charset="UTF-8">
-                <meta http-equiv="Content-Security-Policy" content="default-src; img-src https: data:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+                <meta http-equiv="Content-Security-Policy" content="default-src; connect-src ${apiBaseUrl.news}; img-src https: data:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="${styleResetUri}" rel="stylesheet">
                 <link href="${styleVSCodeUri}" rel="stylesheet">
                 <link href="${styleMainUri}" rel="stylesheet">
-                <link href="${styleSidebarUri}" rel="stylesheet">
                 <script nonce="${nonce}">
                     const tsvscode = acquireVsCodeApi();
                 </script>

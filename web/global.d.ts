@@ -2,7 +2,7 @@ import * as _vscode from "vscode";
 
 declare global {
   const tsvscode: {
-    postMessage: ({ type: string, value: any }) => void;
+    postMessage: ({ type: string, data: any }) => void;
   };
   const SE: {
     init: (options: Object) => void;
