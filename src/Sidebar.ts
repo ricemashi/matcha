@@ -7,7 +7,7 @@ import { Panel } from "./ExplorePanel";
 import { getNonce } from "./Util";
 
 export class Sidebar implements vscode.WebviewViewProvider {
-  _view?: vscode.WebviewView;
+  private _webview?: vscode.WebviewView;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -15,7 +15,9 @@ export class Sidebar implements vscode.WebviewViewProvider {
     webviewView: vscode.WebviewView,
     _context: vscode.WebviewViewResolveContext
   ) {
-    this._view = webviewView;
+    if (!this._webview) {
+      this._webview = webviewView;
+    }
 
     webviewView.webview.options = {
       enableScripts: true,
@@ -24,12 +26,26 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    this.onWebviewLoaded();
-
     webviewView.webview.onDidReceiveMessage(async (msg) => {
       switch (msg.type) {
         case "open_explorer":
           Panel.createOrShow(this._extensionUri);
+          break;
+        case "manga_news":
+          const mangaNewsFeed = await Fetcher.getMangaFeed();
+
+          this._webview?.webview.postMessage({
+            type: "manga_news",
+            data: mangaNewsFeed,
+          });
+          break;
+        case "manga_quote":
+          const mangaQuote = await Fetcher.getMangaQuote();
+
+          vscode.window.showInformationMessage(
+            `"${mangaQuote.quote}" (${mangaQuote.character})`
+          );
+          break;
       }
     });
 
@@ -39,15 +55,6 @@ export class Sidebar implements vscode.WebviewViewProvider {
         type: "manga_info",
         data: "hello",
       });
-    });
-  }
-
-  private async onWebviewLoaded() {
-    const mangaNewsFeed = await Fetcher.getMangaFeed();
-
-    this._view?.webview.postMessage({
-      type: "manga_news",
-      data: mangaNewsFeed,
     });
   }
 

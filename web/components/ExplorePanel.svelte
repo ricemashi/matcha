@@ -6,6 +6,11 @@
   let query = "";
 
   onMount(async () => {
+    tsvscode.postMessage({
+      type: "manga_directory",
+      data: "",
+    });
+
     window.addEventListener("message", (event) => {
       const msg = event.data;
       switch (msg.type) {

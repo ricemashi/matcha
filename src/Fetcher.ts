@@ -5,6 +5,11 @@ import { XMLParser } from "fast-xml-parser";
 import { apiBaseUrl } from "./Constants";
 
 export class Fetcher {
+  public static async getMangaQuote() {
+    const { data } = await axios.get(`${apiBaseUrl.quote}/api/random`);
+    return data;
+  }
+
   public static async getMangaSearch(query: string) {
     const { data } = await axios.get(
       `${apiBaseUrl.service}/manga/mangahere/${query}`
@@ -50,15 +55,17 @@ export class Fetcher {
       const json = new XMLParser().parse(data);
       const { item } = json.rss.channel;
 
-      item.forEach((x: any) => {
+      for (let i = 0; i < 10; i++) {
+        const x = item[i];
+
         result.push({
           title: x.title,
           link: x.link,
           guid: x.guid,
-          description: x.description,
+          description: x.description.replace(/(<([^>]+)>)/gi, ""),
           pubDate: x.pubDate,
         });
-      });
+      }
     } catch (err) {
       throw new Error((err as Error).message);
     }

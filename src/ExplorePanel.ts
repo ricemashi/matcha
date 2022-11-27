@@ -53,8 +53,6 @@ export class Panel {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
 
-    this.onWebviewLoaded();
-
     webview.onDidReceiveMessage(async (msg) => {
       switch (msg.type) {
         case "manga_info":
@@ -78,15 +76,6 @@ export class Panel {
           });
           break;
       }
-    });
-  }
-
-  private async onWebviewLoaded() {
-    const mangaDirectory = await Fetcher.getMangaDirectory(1);
-
-    this._panel.webview.postMessage({
-      type: "manga_directory",
-      data: mangaDirectory,
     });
   }
 
