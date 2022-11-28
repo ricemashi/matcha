@@ -14,6 +14,7 @@ export class Fetcher {
     const { data } = await axios.get(
       `${apiBaseUrl.service}/manga/mangahere/${query}`
     );
+
     return data;
   }
 
@@ -43,6 +44,14 @@ export class Fetcher {
     } catch (err) {
       throw new Error((err as Error).message);
     }
+  }
+
+  public static async getMangaInfo(id: string) {
+    const { data } = await axios.get(
+      `${apiBaseUrl.service}/manga/mangahere/info?id=${id}`
+    );
+
+    return data;
   }
 
   public static async getMangaFeed() {

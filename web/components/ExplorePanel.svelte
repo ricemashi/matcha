@@ -17,7 +17,7 @@
         case "manga_directory":
         case "change_manga_directory":
           mangas = msg.data.results;
-          console.log(mangas);
+          console.log(msg.data.results);
           break;
       }
     });
@@ -45,11 +45,11 @@
       "https://raw.githubusercontent.com/ricemashi/matcha/main/media/no_image.png";
   };
 
-  const dispatchMangaInfo = (manga: any) => {
+  const dispatchMangaInfo = (i: number) => {
     tsvscode.postMessage({
-      type: "manga_info",
+      type: "manga_triggered",
       data: {
-        manga_id: manga.id,
+        manga_id: mangas[i].id,
       },
     });
   };
@@ -96,7 +96,7 @@
   >
     {#each mangas as manga, i}
       <div class="flex flex-col gap-1 my-2">
-        <a href="/" class="bg-green-400" on:click={dispatchMangaInfo}>
+        <a href="/" class="bg-green-400" on:click={() => dispatchMangaInfo(i)}>
           <img
             class="hover:translate-x-1 hover:-translate-y-1 delay-50 duration-100 h-96 w-screen bg-fullPercent object-fill"
             src={`https://api.consumet.org/utils/image-proxy?url=${manga.image}&referer=${manga.headerForImage.Referer}`}
@@ -111,7 +111,7 @@
         <a
           href="/"
           class="hover:text-green-400 text-gray-200 font-semibold"
-          on:click={dispatchMangaInfo}>{manga.title}</a
+          on:click={() => dispatchMangaInfo(i)}>{manga.title}</a
         >
       </div>
     {/each}

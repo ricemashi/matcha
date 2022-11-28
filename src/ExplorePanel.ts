@@ -55,8 +55,8 @@ export class Panel {
 
     webview.onDidReceiveMessage(async (msg) => {
       switch (msg.type) {
-        case "manga_info":
-          EventEmitterHandler.getInstance().emit("manga_info");
+        case "manga_triggered":
+          EventEmitterHandler.getInstance().emit("manga_triggered", msg);
           break;
         case "change_manga_directory":
           const mangaSearchedDirectory = await Fetcher.getMangaSearch(

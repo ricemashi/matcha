@@ -46,14 +46,20 @@ export class Sidebar implements vscode.WebviewViewProvider {
             `"${mangaQuote.quote}" (${mangaQuote.character})`
           );
           break;
+        case "manga_info":
+          const mangaInfo = await Fetcher.getMangaInfo(msg.data.manga_id);
+          this._webview?.webview.postMessage({
+            type: "manga_info",
+            data: mangaInfo,
+          });
       }
     });
 
-    EventEmitterHandler.getInstance().on("manga_info", () => {
+    EventEmitterHandler.getInstance().on("manga_triggered", (msg) => {
       vscode.commands.executeCommand("ping");
       webviewView.webview.postMessage({
-        type: "manga_info",
-        data: "hello",
+        type: "manga_triggered",
+        data: msg.data,
       });
     });
   }
