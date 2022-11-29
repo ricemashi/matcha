@@ -66,10 +66,10 @@
           <a
             on:click={() => dispatchMangaChapter(chapter.id, chapter.title)}
             href="/"
-            class="hover:text-green-400 text-base text-gray-200 font-light"
+            class=" text-base font-light hover:text-green-400"
             >{chapter.title}</a
           >
-          <p class="text-xs text-slate-400">{chapter.releasedDate}</p>
+          <p class="text-xs dark:text-slate-400">{chapter.releasedDate}</p>
         </div>
       {/each}
     </div>

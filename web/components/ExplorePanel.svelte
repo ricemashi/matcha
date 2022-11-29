@@ -109,9 +109,11 @@
         </a>
         <a
           href="/"
-          class="hover:text-green-400 text-gray-200 font-semibold"
-          on:click={() => dispatchMangaInfo(i)}>{manga.title}</a
+          class="hover:text-green-400 font-semibold "
+          on:click={() => dispatchMangaInfo(i)}
         >
+          {manga.title}
+        </a>
       </div>
     {/each}
   </div>

@@ -64,9 +64,7 @@
   </div>
 
   <div class="mt-5">
-    <h5
-      class="mb-5 text-xl font-bold tracking-tight text-gray-900 dark:text-white"
-    >
+    <h5 class="mb-5 text-xl font-bold tracking-tight ">
       Want a quote from your favorite manga/anime characters?
     </h5>
     <button
