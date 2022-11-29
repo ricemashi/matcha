@@ -9,7 +9,11 @@ export function activate(ctx: vscode.ExtensionContext) {
 
   const sidebarProvider = new Sidebar(ctx.extensionUri);
   ctx.subscriptions.push(
-    vscode.window.registerWebviewViewProvider("sidebar", sidebarProvider)
+    vscode.window.registerWebviewViewProvider("sidebar", sidebarProvider, {
+      webviewOptions: {
+        retainContextWhenHidden: true,
+      },
+    })
   );
 }
 

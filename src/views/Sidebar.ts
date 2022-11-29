@@ -55,13 +55,15 @@ export class Sidebar implements vscode.WebviewViewProvider {
           });
           break;
         case "open_manga_chapter":
+          vscode.window.showInformationMessage(
+            `Opening ${msg.data.mangaTitle}: ${msg.data.chapterTitle}`
+          );
           ChapterPanel.createOrShow(this._extensionUri, msg.data.chapterId);
           break;
       }
     });
 
     EventEmitterHandler.getInstance().on("manga_triggered", (msg) => {
-      vscode.commands.executeCommand("ping");
       webviewView.webview.postMessage({
         type: "manga_triggered",
         data: msg.data,

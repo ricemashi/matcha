@@ -37,7 +37,7 @@ export class ExplorePanel {
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
-
+        retainContextWhenHidden: true,
         localResourceRoots: [
           vscode.Uri.joinPath(extensionUri, "media"),
           vscode.Uri.joinPath(extensionUri, "out"),

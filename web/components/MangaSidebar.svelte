@@ -26,11 +26,13 @@
     });
   }
 
-  const dispatchMangaChapter = (chapterId: string) => {
+  const dispatchMangaChapter = (chapterId: string, chapterTitle: string) => {
     tsvscode.postMessage({
       type: "open_manga_chapter",
       data: {
+        mangaTitle: manga.title,
         chapterId,
+        chapterTitle,
       },
     });
   };
@@ -44,7 +46,7 @@
 <main class:mangaId>
   {#if loaded}
     <div
-      class="mb-5 h-1/6 w-full rounded-md bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-1"
+      class="mb-5 h-96 object-scale-down w-full rounded-md bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-1"
     >
       <img
         src={`https://api.consumet.org/utils/image-proxy?url=${manga.image}&referer=${manga.headers.Referer}`}
@@ -62,7 +64,7 @@
       {#each manga.chapters as chapter}
         <div>
           <a
-            on:click={() => dispatchMangaChapter(chapter.id)}
+            on:click={() => dispatchMangaChapter(chapter.id, chapter.title)}
             href="/"
             class="hover:text-green-400 text-base text-gray-200 font-light"
             >{chapter.title}</a
