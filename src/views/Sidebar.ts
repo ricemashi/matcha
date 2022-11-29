@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
-import { apiBaseUrl } from "./Constants";
-import EventEmitterHandler from "./Emitter";
-import { Fetcher } from "./Fetcher";
+import { apiBaseUrl } from "../Constants";
+import EventEmitterHandler from "../Emitter";
+import { Fetcher } from "../Fetcher";
 
-import { Panel } from "./ExplorePanel";
-import { getNonce } from "./Util";
+import { ExplorePanel } from "./ExplorePanel";
+import { getNonce } from "../Util";
+import { ChapterPanel } from "./ChapterPanel";
 
 export class Sidebar implements vscode.WebviewViewProvider {
   private _webview?: vscode.WebviewView;
@@ -29,7 +30,7 @@ export class Sidebar implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (msg) => {
       switch (msg.type) {
         case "open_explorer":
-          Panel.createOrShow(this._extensionUri);
+          ExplorePanel.createOrShow(this._extensionUri);
           break;
         case "manga_news":
           const mangaNewsFeed = await Fetcher.getMangaFeed();
@@ -52,6 +53,10 @@ export class Sidebar implements vscode.WebviewViewProvider {
             type: "manga_info",
             data: mangaInfo,
           });
+          break;
+        case "open_manga_chapter":
+          ChapterPanel.createOrShow(this._extensionUri, msg.data.chapterId);
+          break;
       }
     });
 

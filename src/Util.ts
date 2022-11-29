@@ -7,3 +7,18 @@ export function getNonce(): string {
   }
   return text;
 }
+
+export function extractKey(html: string) {
+  const skss = html.indexOf("eval(function(p,a,c,k,e,d)");
+  const skse = html.indexOf("</script>", skss);
+  const sks = html.substring(skss, skse).replace("eval", "");
+
+  const skds = eval(sks);
+
+  const sksl = skds.indexOf("'");
+  const skel = skds.indexOf(";");
+
+  const skrs = skds.substring(sksl, skel);
+
+  return eval(skrs) as string;
+}

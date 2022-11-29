@@ -5,8 +5,6 @@
   let manga: Record<string, any> = {};
   let loaded = false;
 
-  console.log("he");
-
   onMount(() => {
     window.addEventListener("message", (event) => {
       const msg = event.data;
@@ -14,7 +12,6 @@
         case "manga_info":
           manga = msg.data;
           loaded = true;
-          console.log(manga);
           break;
       }
     });
@@ -28,6 +25,15 @@
       },
     });
   }
+
+  const dispatchMangaChapter = (chapterId: string) => {
+    tsvscode.postMessage({
+      type: "open_manga_chapter",
+      data: {
+        chapterId,
+      },
+    });
+  };
 
   const handleImgError = () => {
     manga.image =
@@ -56,6 +62,7 @@
       {#each manga.chapters as chapter}
         <div>
           <a
+            on:click={() => dispatchMangaChapter(chapter.id)}
             href="/"
             class="hover:text-green-400 text-base text-gray-200 font-light"
             >{chapter.title}</a

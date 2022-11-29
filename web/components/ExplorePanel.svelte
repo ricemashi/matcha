@@ -17,7 +17,6 @@
         case "manga_directory":
         case "change_manga_directory":
           mangas = msg.data.results;
-          console.log(msg.data.results);
           break;
       }
     });

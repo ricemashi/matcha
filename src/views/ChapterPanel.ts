@@ -1,39 +1,45 @@
 import * as vscode from "vscode";
-import { apiBaseUrl } from "./Constants";
-import EventEmitterHandler from "./Emitter";
-import { Fetcher } from "./Fetcher";
-import { getNonce } from "./Util";
+import { apiBaseUrl } from "../Constants";
+import { Fetcher } from "../Fetcher";
+import { getNonce } from "../Util";
 
-export class Panel {
-  public static currentPanel: Panel | undefined;
+export class ChapterPanel {
+  public static currentPanel: ChapterPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
+  private _chapterId: string;
 
   private _disposables: vscode.Disposable[] = [];
 
-  constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  constructor(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    chapterId: string
+  ) {
     this._panel = panel;
     this._extensionUri = extensionUri;
+    this._chapterId = chapterId;
 
     this._update();
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
   }
 
-  public static createOrShow(extensionUri: vscode.Uri) {
+  public static createOrShow(extensionUri: vscode.Uri, chapterId: string) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
 
-    if (Panel.currentPanel) {
-      Panel.currentPanel._panel.reveal(column);
-      Panel.currentPanel._update();
+    if (ChapterPanel.currentPanel) {
+      ChapterPanel.currentPanel._panel.reveal(column);
+      ChapterPanel.currentPanel._chapterId = chapterId;
+      ChapterPanel.currentPanel._update();
       return;
     }
 
     const panel = vscode.window.createWebviewPanel(
-      "explore-panel",
-      "Explore",
+      "chapter-panel",
+      "Chapter",
       column || vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -45,7 +51,11 @@ export class Panel {
       }
     );
 
-    Panel.currentPanel = new Panel(panel, extensionUri);
+    ChapterPanel.currentPanel = new ChapterPanel(
+      panel,
+      extensionUri,
+      chapterId
+    );
   }
 
   private async _update() {
@@ -53,35 +63,17 @@ export class Panel {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
 
-    webview.onDidReceiveMessage(async (msg) => {
-      switch (msg.type) {
-        case "manga_triggered":
-          EventEmitterHandler.getInstance().emit("manga_triggered", msg);
-          break;
-        case "change_manga_directory":
-          const mangaSearchedDirectory = await Fetcher.getMangaSearch(
-            msg.data.query
-          );
-          webview.postMessage({
-            type: "change_manga_directory",
-            data: mangaSearchedDirectory,
-          });
-          break;
-        case "manga_directory":
-          const mangaDirectory = await Fetcher.getMangaDirectory(1);
+    const chapterData = await Fetcher.getMangaChapters(this._chapterId);
 
-          this._panel.webview.postMessage({
-            type: "manga_directory",
-            data: mangaDirectory,
-          });
-          break;
-      }
+    this._panel.webview.postMessage({
+      type: "manga_chapter",
+      data: chapterData,
     });
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
     const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "explore-panel.js")
+      vscode.Uri.joinPath(this._extensionUri, "out", "chapter-panel.js")
     );
     const styleResetUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "media", "reset.css")
@@ -90,7 +82,7 @@ export class Panel {
       vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css")
     );
     const styleMainUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "out", "explore-panel.css")
+      vscode.Uri.joinPath(this._extensionUri, "out", "chapter-panel.css")
     );
 
     const nonce = getNonce();
@@ -117,7 +109,7 @@ export class Panel {
         </html>`;
   }
   public dispose() {
-    Panel.currentPanel = undefined;
+    ChapterPanel.currentPanel = undefined;
 
     this._panel.dispose();
 

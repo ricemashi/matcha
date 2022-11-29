@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Sidebar } from "./Sidebar";
+import { Sidebar } from "./views/Sidebar";
 
 export function activate(ctx: vscode.ExtensionContext) {
   const pingCommand = vscode.commands.registerCommand("ping", () => {
