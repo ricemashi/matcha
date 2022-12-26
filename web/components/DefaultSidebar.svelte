@@ -6,8 +6,10 @@
 
   onMount(async () => {
     tsvscode.postMessage({
-      type: "manga_news",
-      data: "",
+      type: "default",
+      data: {
+        command: "show_manga_news",
+      },
     });
 
     window.addEventListener("message", (event) => {
@@ -20,21 +22,26 @@
     });
   });
 
-  const dispatchOpenExplorer = () => {
-    tsvscode.postMessage({ type: "open_explorer", data: "open_explorer" });
+  const openMangaExplorer = () => {
+    tsvscode.postMessage({
+      type: "default",
+      data: {
+        command: "open_manga_explorer",
+      },
+    });
   };
-  const dispatchMangaQuote = () => {
-    tsvscode.postMessage({ type: "manga_quote", data: "manga_quote" });
-  };
+
+  // const dispatchMangaQuote = () => {
+  //   tsvscode.postMessage({ type: "default", data: {command: "manga_quote"} });
+  // };
 </script>
 
 <main>
   <div class="flex flex-col gap-4 my-3">
     <h1 class="text-xl font-bold mb-2">Quick Actions</h1>
-    <Button on:click={dispatchOpenExplorer} variant="primary"
-      >Start Reading</Button
+    <Button on:click={openMangaExplorer} variant="primary">Start Reading</Button
     >
-    <Button on:click={dispatchOpenExplorer} variant="secondary"
+    <Button on:click={openMangaExplorer} variant="secondary"
       >Explore Library</Button
     >
   </div>
@@ -42,7 +49,7 @@
   <div class="flex flex-col gap-4 my-12 overflow-y-scroll">
     <h1 class="text-xl font-bold mb-4">Animanga News</h1>
 
-    <div class="flex flex-col gap-4 h-96 overflow-y-scroll scrollbar-hide">
+    <div class="flex flex-col gap-4 h-72 overflow-y-scroll scrollbar-hide">
       {#each feeds as feed, i}
         <div class="my-1">
           <a href={feed.link}>
@@ -61,17 +68,6 @@
         {/if}
       {/each}
     </div>
-  </div>
-
-  <div class="mt-5">
-    <h5 class="mb-5 text-xl font-bold tracking-tight ">
-      Want a quote from your favorite manga/anime characters?
-    </h5>
-    <button
-      type="button"
-      class="text-white bg-gradient-to-r from-yellow-600 to-red-600 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 "
-      on:click={dispatchMangaQuote}>Suprise me</button
-    >
   </div>
 </main>
 

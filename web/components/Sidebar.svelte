@@ -7,20 +7,11 @@
   let isMangaClicked = false;
   let mangaId = "";
 
-  // const state = {
-  //   manga_sidebar: false,
-  //   manga_id: "",
-  // };
-
   onMount(async () => {
     window.addEventListener("message", (event) => {
       const msg = event.data;
       switch (msg.type) {
         case "manga_triggered":
-          const prevState = tsvscode.getState();
-
-          console.log(prevState);
-
           isMangaClicked = true;
           mangaId = msg.data.manga_id;
 

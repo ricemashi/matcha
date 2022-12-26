@@ -6,9 +6,10 @@ import { Fetcher } from "../Fetcher";
 import { ExplorePanel } from "./ExplorePanel";
 import { getNonce } from "../Util";
 import { ChapterPanel } from "./ChapterPanel";
+import { SidebarCommand } from "../command/Sidebar";
 
 export class Sidebar implements vscode.WebviewViewProvider {
-  private _webview?: vscode.WebviewView;
+  public _webview?: vscode.WebviewView;
 
   constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -27,39 +28,12 @@ export class Sidebar implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
+    const command = new SidebarCommand(this, this._extensionUri);
+
     webviewView.webview.onDidReceiveMessage(async (msg) => {
-      switch (msg.type) {
-        case "open_explorer":
-          ExplorePanel.createOrShow(this._extensionUri);
-          break;
-        case "manga_news":
-          const mangaNewsFeed = await Fetcher.getMangaFeed();
-
-          this._webview?.webview.postMessage({
-            type: "manga_news",
-            data: mangaNewsFeed,
-          });
-          break;
-        case "manga_quote":
-          const mangaQuote = await Fetcher.getMangaQuote();
-
-          vscode.window.showInformationMessage(
-            `"${mangaQuote.quote}" (${mangaQuote.character})`
-          );
-          break;
-        case "manga_info":
-          const mangaInfo = await Fetcher.getMangaInfo(msg.data.manga_id);
-          this._webview?.webview.postMessage({
-            type: "manga_info",
-            data: mangaInfo,
-          });
-          break;
-        case "open_manga_chapter":
-          vscode.window.showInformationMessage(
-            `Opening ${msg.data.mangaTitle}: ${msg.data.chapterTitle}`
-          );
-          ChapterPanel.createOrShow(this._extensionUri, msg.data.chapterId);
-          break;
+      if (msg.type !== "default" || "manga" || "anime") {
+        command.execute(msg.data.command, msg);
+        console.log(command._mangaHistory);
       }
     });
 
