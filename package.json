@@ -1,9 +1,9 @@
 {
-  "name": "matcha",
+  "name": "matcha-vscode",
   "displayName": "Matcha",
   "description": "Read and track manga from VS Code",
-  "version": "0.0.1",
-  "icon": "https://raw.githubusercontent.com/ricemashi/matcha/main/media/logo.png",
+  "version": "0.0.2",
+  "icon": "media/logo.png",
   "engines": {
     "vscode": "^1.73.0"
   },
@@ -104,7 +104,10 @@
     "fast-xml-parser": "^4.0.12",
     "svelte-lazy-image": "^0.5.1"
   },
-  "repository": "ricemashi/matcha",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ricemashi/matcha.git"
+  },
   "author": "ricemashi",
   "license": "MIT"
 }
