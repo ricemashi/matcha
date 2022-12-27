@@ -90,15 +90,30 @@ export class SidebarCommand {
 
     this.register("open_manga_chapter", {
       execute: (msg) => {
-        rootThis._mangaHistory[msg.data.mangaTitle] = {
-          title: msg.data.mangaTitle,
-          chapter: msg.data.chapterTitle,
-          chapterId: msg.data.chapterId,
+        const manga = msg.data.manga;
+        const index = msg.data.chapterIndex;
+        const nextChapter = manga.chapters[index - 1]?.id;
+        const prevChapter = manga.chapters[index + 1]?.id;
+
+        const context = {
+          // title: msg.data.mangaTitle,
+          manga,
+          chapterTitle: manga.chapters[index].title,
+          chapterId: manga.chapters[index].id,
+          previousChapter: prevChapter === undefined ? null : index + 1,
+          nextChapter: nextChapter === undefined ? null : index - 1,
         };
+
+        rootThis._mangaHistory[manga.title] = {
+          chapter: context.chapterTitle,
+          title: manga.title,
+        };
+        console.log(rootThis._mangaHistory);
         vscode.window.showInformationMessage(
-          `Opening ${msg.data.mangaTitle}: ${msg.data.chapterTitle}`
+          `Opening ${manga.title}: ${context.chapterTitle}`
         );
-        ChapterPanel.createOrShow(extensionUri, msg.data.chapterId);
+
+        ChapterPanel.createOrShow(extensionUri, context);
       },
     });
   }

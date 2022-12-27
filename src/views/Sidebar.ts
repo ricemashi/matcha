@@ -1,11 +1,8 @@
 import * as vscode from "vscode";
 import { apiBaseUrl } from "../Constants";
 import EventEmitterHandler from "../Emitter";
-import { Fetcher } from "../Fetcher";
 
-import { ExplorePanel } from "./ExplorePanel";
 import { getNonce } from "../Util";
-import { ChapterPanel } from "./ChapterPanel";
 import { SidebarCommand } from "../command/Sidebar";
 
 export class Sidebar implements vscode.WebviewViewProvider {
@@ -41,6 +38,10 @@ export class Sidebar implements vscode.WebviewViewProvider {
         type: "manga_triggered",
         data: msg.data,
       });
+    });
+
+    EventEmitterHandler.getInstance().on("change_manga_chapter", (msg) => {
+      command.execute("open_manga_chapter", msg);
     });
   }
 

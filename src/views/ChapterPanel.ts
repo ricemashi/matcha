@@ -1,38 +1,45 @@
 import * as vscode from "vscode";
 import { apiBaseUrl } from "../Constants";
+import EventEmitterHandler from "../Emitter";
 import { Fetcher } from "../Fetcher";
 import { getNonce } from "../Util";
 
+interface IMangaContext {
+  manga: Record<string, any>;
+  chapterId: string;
+  chapterTitle: string;
+  previousChapter: number | null;
+  nextChapter: number | null;
+}
 export class ChapterPanel {
   public static currentPanel: ChapterPanel | undefined;
   private readonly _panel: vscode.WebviewPanel;
   private readonly _extensionUri: vscode.Uri;
-  private _chapterId: string;
-
+  private _manga: IMangaContext;
   private _disposables: vscode.Disposable[] = [];
 
   constructor(
     panel: vscode.WebviewPanel,
     extensionUri: vscode.Uri,
-    chapterId: string
+    manga: IMangaContext
   ) {
     this._panel = panel;
     this._extensionUri = extensionUri;
-    this._chapterId = chapterId;
+    this._manga = manga;
 
     this._update();
 
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
   }
 
-  public static createOrShow(extensionUri: vscode.Uri, chapterId: string) {
+  public static createOrShow(extensionUri: vscode.Uri, manga: IMangaContext) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
 
     if (ChapterPanel.currentPanel) {
       ChapterPanel.currentPanel._panel.reveal(column);
-      ChapterPanel.currentPanel._chapterId = chapterId;
+      ChapterPanel.currentPanel._manga = manga;
       ChapterPanel.currentPanel._update();
       return;
     }
@@ -51,11 +58,7 @@ export class ChapterPanel {
       }
     );
 
-    ChapterPanel.currentPanel = new ChapterPanel(
-      panel,
-      extensionUri,
-      chapterId
-    );
+    ChapterPanel.currentPanel = new ChapterPanel(panel, extensionUri, manga);
   }
 
   private async _update() {
@@ -63,11 +66,25 @@ export class ChapterPanel {
 
     this._panel.webview.html = this._getHtmlForWebview(webview);
 
-    const chapterData = await Fetcher.getMangaChapters(this._chapterId);
+    const pages = await Fetcher.getMangaChapters(this._manga.chapterId);
+
+    const { manga, chapterTitle, previousChapter, nextChapter } = this._manga;
 
     this._panel.webview.postMessage({
       type: "manga_chapter",
-      data: chapterData,
+      data: {
+        pages,
+        chapterTitle: chapterTitle,
+        previousChapter,
+        nextChapter,
+        manga: manga,
+      },
+    });
+
+    webview.onDidReceiveMessage(async (msg) => {
+      if (msg.type === "manga" && msg.data.command === "change_manga_chapter") {
+        EventEmitterHandler.getInstance().emit("change_manga_chapter", msg);
+      }
     });
   }
 

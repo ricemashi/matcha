@@ -31,12 +31,13 @@
     });
   }
 
-  const showMangaChapter = (chapter: any) => {
+  const showMangaChapter = (chapter: any, idx: number) => {
     tsvscode.postMessage({
       type: "manga",
       data: {
         command: "open_manga_chapter",
-        mangaTitle: manga.title,
+        manga: manga,
+        chapterIndex: idx,
         chapterId: chapter.id,
         chapterTitle: chapter.title,
       },
@@ -75,10 +76,10 @@
     <p class="text-center text-base text-slate-400">{manga.authors}</p>
 
     <div class="my-4 flex flex-col gap-2 h-72 overflow-y-scroll scrollbar-hide">
-      {#each manga.chapters as chapter}
+      {#each manga.chapters as chapter, i}
         <div>
           <a
-            on:click={() => showMangaChapter(chapter)}
+            on:click={() => showMangaChapter(chapter, i)}
             href="/"
             class=" text-base font-light hover:text-green-400"
             >{chapter.title}</a
@@ -88,16 +89,19 @@
       {/each}
     </div>
 
+    <!-- // Reversed as it goes from latest to oldest -->
+
     <Button
       extraStyle="my-2"
       variant="accent"
-      on:click={() => showMangaChapter(manga.chapters.at(0))}
+      on:click={() => showMangaChapter(manga.chapters.at(0), 0)}
       >Latest Chapter</Button
     >
     <Button
       extraStyle="my-2"
       variant="accentTwo"
-      on:click={() => showMangaChapter(manga.chapters.at(-1))}
+      on:click={() =>
+        showMangaChapter(manga.chapters.at(-1), manga.chapters.length - 1)}
       >First Chapter</Button
     >
 
