@@ -32,7 +32,6 @@
   }
 
   const showMangaChapter = (chapter: any) => {
-    console.log(chapter);
     tsvscode.postMessage({
       type: "manga",
       data: {
@@ -43,8 +42,6 @@
       },
     });
   };
-
-  console.log(manga);
 
   const handleImgError = () => {
     manga.image =

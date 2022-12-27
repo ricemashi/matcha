@@ -3,6 +3,13 @@
   import Button from "./Button.svelte";
 
   let feeds: any[] = [];
+  let history: {
+    manga: any[];
+    anime: any[];
+  } = {
+    manga: [],
+    anime: [],
+  };
 
   onMount(async () => {
     tsvscode.postMessage({
@@ -12,11 +19,22 @@
       },
     });
 
+    tsvscode.postMessage({
+      type: "default",
+      data: {
+        command: "show_history",
+      },
+    });
+
     window.addEventListener("message", (event) => {
       const msg = event.data;
       switch (msg.type) {
         case "manga_news":
           feeds = msg.data;
+          break;
+        case "history":
+          history.manga = Object.values(msg.data.manga);
+          console.log(history);
           break;
       }
     });
@@ -30,10 +48,6 @@
       },
     });
   };
-
-  // const dispatchMangaQuote = () => {
-  //   tsvscode.postMessage({ type: "default", data: {command: "manga_quote"} });
-  // };
 </script>
 
 <main>
@@ -42,11 +56,11 @@
     <Button on:click={openMangaExplorer} variant="primary">Start Reading</Button
     >
     <Button on:click={openMangaExplorer} variant="secondary"
-      >Explore Library</Button
+      >Explore Anime</Button
     >
   </div>
 
-  <div class="flex flex-col gap-4 my-12 overflow-y-scroll">
+  <div class="flex flex-col gap-4 my-10 overflow-y-scroll">
     <h1 class="text-xl font-bold mb-4">Animanga News</h1>
 
     <div class="flex flex-col gap-4 h-72 overflow-y-scroll scrollbar-hide">
@@ -54,7 +68,7 @@
         <div class="my-1">
           <a href={feed.link}>
             <h2
-              class="font-medium text-md mb-2 hover:text-green-400 cursor-pointer"
+              class="font-medium text- mb-2 hover:text-green-400 cursor-pointer"
             >
               {feed.title}
             </h2>
@@ -66,6 +80,40 @@
             class="rounded-md  p-0.5 bg-gradient-to-r from-green-300 via-blue-500 to-purple-600 "
           />
         {/if}
+      {/each}
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-4 my-10 overflow-y-scroll">
+    <h1 class="text-xl font-bold">Continue Reading</h1>
+
+    <div class="inline-flex  w-full rounded-md " role="group">
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <a
+        type="button"
+        class="py-2 px-4 text-sm  w-full font-medium cursor-pointer bg-transparent rounded-l-lg border border-gray-500  hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white  dark:hover:bg-gray-700 dark:focus:bg-gray-700"
+      >
+        Anime
+      </a>
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <a
+        type="button"
+        class="py-2 px-4 text-sm w-full font-medium cursor-pointer bg-transparent rounded-r-md border border-gray-500 hover:bg-gray-900 hover:text-white focus:z-10 focus:ring-2 focus:ring-gray-500 focus:bg-gray-900 focus:text-white  dark:hover:bg-gray-700 dark:focus:bg-gray-700"
+      >
+        Manga
+      </a>
+    </div>
+
+    <div
+      class="flex flex-col mt-0.5 gap-4 h-40 overflow-y-scroll scrollbar-hide"
+    >
+      {#each history.manga as manga}
+        <div class="my-0.5">
+          <a href="/" class=" text-base font-light hover:text-green-400"
+            >{manga.title}</a
+          >
+          <p class="text-xs dark:text-slate-400">{manga.chapter}</p>
+        </div>
       {/each}
     </div>
   </div>

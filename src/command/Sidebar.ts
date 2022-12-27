@@ -14,7 +14,8 @@ export class SidebarCommand {
   _webview: Sidebar;
   _extensionUri: vscode.Uri;
 
-  _mangaHistory: [number, string][] = [];
+  _animeHistory: Record<string, any> = {};
+  _mangaHistory: Record<string, any> = {};
 
   constructor(webview: Sidebar, extensionUri: vscode.Uri) {
     this._webview = webview;
@@ -37,6 +38,7 @@ export class SidebarCommand {
   }
 
   private registerDefaultCommands() {
+    const rootThis = this;
     const webview = this._webview;
     const extensionUri = this._extensionUri;
 
@@ -53,6 +55,18 @@ export class SidebarCommand {
         webview._webview?.webview.postMessage({
           type: "manga_news",
           data: mangaNewsFeed,
+        });
+      },
+    });
+
+    this.register("show_history", {
+      async execute() {
+        webview._webview?.webview.postMessage({
+          type: "history",
+          data: {
+            manga: rootThis._mangaHistory,
+            anime: rootThis._animeHistory,
+          },
         });
       },
     });
@@ -76,10 +90,11 @@ export class SidebarCommand {
 
     this.register("open_manga_chapter", {
       execute: (msg) => {
-        rootThis._mangaHistory.push([
-          Date.now(),
-          `${msg.data.mangaTitle}: ${msg.data.chapterTitle}`,
-        ]);
+        rootThis._mangaHistory[msg.data.mangaTitle] = {
+          title: msg.data.mangaTitle,
+          chapter: msg.data.chapterTitle,
+          chapterId: msg.data.chapterId,
+        };
         vscode.window.showInformationMessage(
           `Opening ${msg.data.mangaTitle}: ${msg.data.chapterTitle}`
         );

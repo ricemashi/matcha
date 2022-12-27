@@ -27,7 +27,7 @@ export class ExplorePanel {
 
     if (ExplorePanel.currentPanel) {
       ExplorePanel.currentPanel._panel.reveal(column);
-      ExplorePanel.currentPanel._update();
+      // ExplorePanel.currentPanel._update();
       return;
     }
 

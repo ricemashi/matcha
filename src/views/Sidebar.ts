@@ -33,7 +33,6 @@ export class Sidebar implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(async (msg) => {
       if (msg.type !== "default" || "manga" || "anime") {
         command.execute(msg.data.command, msg);
-        console.log(command._mangaHistory);
       }
     });
 
