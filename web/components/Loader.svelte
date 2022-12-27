@@ -1,43 +1,13 @@
-<!-- svelte-ignore missing-declaration -->
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { useLazyImage as lazyImage } from "svelte-lazy-image";
-  import Loader from "./Loader.svelte";
-
-  let pages: any[] = [];
-
-  let loaded = false;
-
-  onMount(async () => {
-    window.addEventListener("message", (event) => {
-      const msg = event.data;
-      switch (msg.type) {
-        case "manga_chapter":
-          pages = msg.data;
-          loaded = true;
-          break;
-      }
-    });
-  });
+  export let loaded = false;
 </script>
 
 <main>
-  <Loader {loaded}>
-    <div class="flex flex-col justify-center sm:px-10 lg:px-40">
-      {#each pages as page}
-        <img
-          src={`https://api.consumet.org/utils/image-proxy?url=${page.img}&referer=${page.headerForImage.Referer}`}
-          alt={`manga_chapter_${page.page}`}
-          use:lazyImage
-          loading="lazy"
-          class="align-middle max-w-full"
-        />
-      {/each}
-    </div>
-  </Loader>
-
-  <!-- {#if !loaded}
-    <div class="flex items-center justify-center h-screen" role="status">
+  {#if !loaded}
+    <div
+      class="flex items-center justify-center h-screen w-screen fixed"
+      role="status"
+    >
       <svg
         class="inline mr-2 w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-green-500"
         viewBox="0 0 100 101"
@@ -53,9 +23,10 @@
           fill="currentFill"
         />
       </svg>
-      <span class="sr-only">Loading...</span>
     </div>
-  {:else}{/if} -->
+  {:else}
+    <slot />
+  {/if}
 </main>
 
 <style global lang="postcss">

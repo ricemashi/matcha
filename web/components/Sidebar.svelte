@@ -1,10 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { merge_ssr_styles } from "svelte/internal";
   import Button from "./Button.svelte";
   import DefaultSidebar from "./DefaultSidebar.svelte";
   import MangaSidebar from "./MangaSidebar.svelte";
 
-  let isMangaClicked = false;
+  let state: "default" | "manga" | "anime" = "default";
   let mangaId = "";
 
   onMount(async () => {
@@ -12,24 +13,24 @@
       const msg = event.data;
       switch (msg.type) {
         case "manga_triggered":
-          isMangaClicked = true;
+          state = "manga";
           mangaId = msg.data.manga_id;
-
           break;
       }
     });
   });
 
-  const backToMenu = () => {
-    isMangaClicked = false;
+  const handleEventDispatcher = (event: any) => {
+    if (event.detail.command == "return_to_default_sidebar") {
+      state = "default";
+    }
   };
 </script>
 
 <main>
-  {#if isMangaClicked}
-    <MangaSidebar {mangaId} />
-    <Button on:click={backToMenu}>Back to Main</Button>
-  {:else}
+  {#if state == "default"}
     <DefaultSidebar />
+  {:else if state == "manga"}
+    <MangaSidebar {mangaId} on:message={handleEventDispatcher} />
   {/if}
 </main>
