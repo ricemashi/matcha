@@ -48,6 +48,19 @@
       },
     });
   };
+
+  const showMangaChapter = (manga: any) => {
+    tsvscode.postMessage({
+      type: "manga",
+      data: {
+        command: "open_manga_chapter",
+        manga: manga.chapter.manga,
+        chapterIndex: manga.chapter.chapterIdx,
+        chapterId: manga.chapter.chapterId,
+        chapterTitle: manga.chapter.chapterTitle,
+      },
+    });
+  };
 </script>
 
 <main>
@@ -107,12 +120,16 @@
     <div
       class="flex flex-col mt-0.5 gap-4 h-40 overflow-y-scroll scrollbar-hide"
     >
-      {#each history.manga as manga}
+      {#each history.manga as manga, i}
         <div class="my-0.5">
-          <a href="/" class=" text-base font-light hover:text-green-400"
-            >{manga.title}</a
+          <a
+            on:click={() => showMangaChapter(manga)}
+            href="/"
+            class=" text-base font-light hover:text-green-400">{manga.title}</a
           >
-          <p class="text-xs dark:text-slate-400">{manga.chapter}</p>
+          <p class="text-xs dark:text-slate-400">
+            {manga.chapter.chapterTitle}
+          </p>
         </div>
       {/each}
     </div>

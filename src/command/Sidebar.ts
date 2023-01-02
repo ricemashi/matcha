@@ -101,10 +101,11 @@ export class SidebarCommand {
           chapterId: manga.chapters[index].id,
           previousChapter: prevChapter === undefined ? null : index + 1,
           nextChapter: nextChapter === undefined ? null : index - 1,
+          chapterIdx: index,
         };
 
         rootThis._mangaHistory[manga.title] = {
-          chapter: context.chapterTitle,
+          chapter: context,
           title: manga.title,
         };
         console.log(rootThis._mangaHistory);

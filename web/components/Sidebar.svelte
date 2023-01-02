@@ -1,7 +1,5 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { merge_ssr_styles } from "svelte/internal";
-  import Button from "./Button.svelte";
   import DefaultSidebar from "./DefaultSidebar.svelte";
   import MangaSidebar from "./MangaSidebar.svelte";
 
