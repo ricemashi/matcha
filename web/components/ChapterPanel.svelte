@@ -14,7 +14,6 @@
       const msg = event.data;
       switch (msg.type) {
         case "manga_chapter":
-          console.log(msg.data);
           result = msg.data;
           loaded = true;
           break;
@@ -23,7 +22,6 @@
   });
 
   const changeMangaChapter = (idx: number) => {
-    console.log("test");
     tsvscode.postMessage({
       type: "manga",
       data: {
@@ -65,6 +63,20 @@
           class="align-middle max-w-full"
         />
       {/each}
+
+      <div class="flex gap-3 my-4">
+        {#if result.previousChapter != null}
+          <Button on:click={() => changeMangaChapter(result.previousChapter)}
+            >Previous Chapter</Button
+          >
+        {/if}
+
+        {#if result.nextChapter != null}
+          <Button on:click={() => changeMangaChapter(result.nextChapter)}
+            >Next Chapter</Button
+          >
+        {/if}
+      </div>
     </div>
   </Loader>
 </main>
