@@ -96,7 +96,6 @@ export class SidebarCommand {
         const prevChapter = manga.chapters[index + 1]?.id;
 
         const context = {
-          // title: msg.data.mangaTitle,
           manga,
           chapterTitle: manga.chapters[index].title,
           chapterId: manga.chapters[index].id,
@@ -117,6 +116,4 @@ export class SidebarCommand {
       },
     });
   }
-
-  //   private registerAnimeCommands() {}?
 }
