@@ -34,7 +34,6 @@
           break;
         case "history":
           history.manga = Object.values(msg.data.manga);
-          console.log(history);
           break;
       }
     });
@@ -45,6 +44,15 @@
       type: "default",
       data: {
         command: "open_manga_explorer",
+      },
+    });
+  };
+
+  const openAnimeExplorer = () => {
+    tsvscode.postMessage({
+      type: "default",
+      data: {
+        command: "open_anime_explorer",
       },
     });
   };
@@ -68,12 +76,12 @@
     <h1 class="text-xl font-bold mb-2">Quick Actions</h1>
     <Button on:click={openMangaExplorer} variant="primary">Start Reading</Button
     >
-    <Button on:click={openMangaExplorer} variant="secondary"
+    <Button on:click={openAnimeExplorer} variant="secondary"
       >Explore Anime</Button
     >
   </div>
 
-  <div class="flex flex-col gap-4 my-10 overflow-y-scroll">
+  <div class="flex flex-col gap-4 my-6 overflow-y-scroll">
     <h1 class="text-xl font-bold mb-4">Animanga News</h1>
 
     <div class="flex flex-col gap-4 h-72 overflow-y-scroll scrollbar-hide">
@@ -97,7 +105,7 @@
     </div>
   </div>
 
-  <div class="flex flex-col gap-4 my-10 overflow-y-scroll">
+  <div class="flex flex-col gap-4 my-7 overflow-y-scroll">
     <h1 class="text-xl font-bold">Continue Reading</h1>
 
     <div class="inline-flex  w-full rounded-md " role="group">
@@ -118,7 +126,7 @@
     </div>
 
     <div
-      class="flex flex-col mt-0.5 gap-4 h-40 overflow-y-scroll scrollbar-hide"
+      class="flex flex-col mt-1.5 gap-4 h-48 overflow-y-scroll scrollbar-hide"
     >
       {#each history.manga as manga, i}
         <div class="my-0.5">

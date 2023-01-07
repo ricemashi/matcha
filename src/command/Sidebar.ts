@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { ExplorePanel } from "../views/ExplorePanel";
-
+import { Storage } from "../Storage";
 import { Sidebar } from "../views/Sidebar";
 import { Fetcher } from "../Fetcher";
 import { ChapterPanel } from "../views/ChapterPanel";
@@ -38,13 +38,20 @@ export class SidebarCommand {
   }
 
   private registerDefaultCommands() {
-    const rootThis = this;
     const webview = this._webview;
     const extensionUri = this._extensionUri;
 
     this.register("open_manga_explorer", {
       execute() {
         ExplorePanel.createOrShow(extensionUri);
+      },
+    });
+
+    this.register("open_anime_explorer", {
+      execute() {
+        vscode.window.showInformationMessage(
+          `Currently under production, please wait!`
+        );
       },
     });
 
@@ -61,11 +68,11 @@ export class SidebarCommand {
 
     this.register("show_history", {
       async execute() {
+        const mangaHistory = Storage.getMangaHistory();
         webview._webview?.webview.postMessage({
           type: "history",
           data: {
-            manga: rootThis._mangaHistory,
-            anime: rootThis._animeHistory,
+            manga: mangaHistory,
           },
         });
       },
@@ -108,7 +115,12 @@ export class SidebarCommand {
           chapter: context,
           title: manga.title,
         };
-        console.log(rootThis._mangaHistory);
+
+        Storage.insertMangaHistory({
+          chapter: context,
+          title: manga.title,
+        });
+
         vscode.window.showInformationMessage(
           `Opening ${manga.title}: ${context.chapterTitle}`
         );

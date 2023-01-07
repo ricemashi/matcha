@@ -21,6 +21,11 @@
       {
         "command": "ping",
         "title": "Ping Matcha",
+        "categ,ory": "Matcha"
+      },
+      {
+        "command": "clearHistory",
+        "title": "Delete Manga History",
         "category": "Matcha"
       }
     ],
@@ -102,6 +107,7 @@
     "axios": "^1.1.3",
     "cheerio": "^1.0.0-rc.12",
     "fast-xml-parser": "^4.0.12",
+    "simple-json-db": "^2.0.0",
     "svelte-lazy-image": "^0.5.1"
   },
   "repository": {
