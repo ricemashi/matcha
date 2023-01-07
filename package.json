@@ -2,7 +2,7 @@
   "name": "matcha-vscode",
   "displayName": "Matcha",
   "description": "Read and track manga from VS Code",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "icon": "media/logo.png",
   "engines": {
     "vscode": "^1.73.0"

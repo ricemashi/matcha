@@ -17,10 +17,9 @@
 
 This extension features a number of features:
 
-- Read manga directly without ads
+- Read manga directly while coding
 - Get manga and anime news
 - Save your mangas to your list
-- Get anime related quotes!
 
 ### Preview
 
